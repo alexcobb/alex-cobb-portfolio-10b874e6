@@ -1,6 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-import { Building2, Calendar } from "lucide-react";
-
 interface Experience {
   title: string;
   company: string;
@@ -9,10 +6,6 @@ interface Experience {
 }
 
 const ExperienceTimeline = () => {
-  const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
-  const sectionRef = useRef<HTMLElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
   const experiences: Experience[] = [
     {
       title: "Co-Founder, Fractional CPO",
@@ -65,85 +58,37 @@ const ExperienceTimeline = () => {
     }
   ];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = itemRefs.current.indexOf(entry.target as HTMLDivElement);
-            if (index !== -1) {
-              setVisibleItems((prev) => new Set([...prev, index]));
-            }
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    itemRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={sectionRef} id="experience" className="py-24 px-4 bg-card/50">
-      <div className="container mx-auto max-w-4xl">
-        <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4 text-center">
-          Professional <span className="text-primary">Experience</span>
+    <section id="experience" className="py-8 px-4">
+      <div className="max-w-resume mx-auto">
+        <h2 className="text-xl font-semibold text-foreground mb-6 uppercase tracking-wide border-b border-border pb-2">
+          Experience
         </h2>
-        
-        <div className="w-20 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-16" />
 
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20 transform md:-translate-x-1/2" />
-
-          {experiences.map((exp, index) => (
-            <div
-              key={`${exp.company}-${exp.period}`}
-              ref={(el) => (itemRefs.current[index] = el)}
-              className={`relative mb-12 last:mb-0 ${
-                index % 2 === 0 ? "md:pr-8 md:text-right md:ml-0 md:mr-auto md:w-1/2" : "md:pl-8 md:ml-auto md:w-1/2"
-              } pl-8 md:pl-0 transition-all duration-700 ${
-                visibleItems.has(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              }`}
-            >
-              {/* Timeline dot */}
-              <div 
-                className={`absolute w-4 h-4 bg-primary rounded-full border-4 border-background shadow-lg shadow-primary/30 ${
-                  index % 2 === 0 
-                    ? "left-[-8px] md:left-auto md:right-[-8px]" 
-                    : "left-[-8px] md:left-[-8px]"
-                } top-6 transform md:translate-x-0`}
-              />
-
-              {/* Content card */}
-              <div className="bg-secondary/50 p-6 rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group">
-                <div className={`flex items-center gap-2 mb-2 text-primary ${index % 2 === 0 ? "md:justify-end" : ""}`}>
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-medium">{exp.period}</span>
-                </div>
-
-                <h3 className="text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+        <div className="space-y-6">
+          {experiences.map((exp) => (
+            <div key={`${exp.company}-${exp.period}`}>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-1">
+                <h3 className="text-lg font-semibold text-foreground">
                   {exp.title}
                 </h3>
-
-                <div className={`flex items-center gap-2 mb-4 text-muted-foreground ${index % 2 === 0 ? "md:justify-end" : ""}`}>
-                  <Building2 className="w-4 h-4" />
-                  <span>{exp.company}</span>
-                </div>
-
-                <ul className={`space-y-2 ${index % 2 === 0 ? "md:text-right" : ""}`}>
-                  {exp.highlights.map((highlight, i) => (
-                    <li key={i} className="text-sm text-muted-foreground leading-relaxed">
-                      <span className="text-primary mr-2">•</span>
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
+                <span className="text-sm text-muted-foreground">
+                  {exp.period}
+                </span>
               </div>
+              
+              <p className="text-foreground mb-2">
+                {exp.company}
+              </p>
+
+              <ul className="space-y-1">
+                {exp.highlights.map((highlight, i) => (
+                  <li key={i} className="flex gap-2 text-foreground">
+                    <span className="text-muted-foreground">•</span>
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
